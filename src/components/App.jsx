@@ -11,17 +11,11 @@ function App() {
   const dispatch = useDispatch();
   const contacts = useSelector(getFilteredContacts);
 
-  // useEffect(() => {
-  //   localStorage.setItem('contacts', JSON.stringify(contacts));
-  // }, [contacts]);
-
   const formSubmit = data => {
     if (contacts.some(({ name }) => name === data.name)) {
       alert(`${data.name} is already in contacts`);
       return;
     }
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-    console.log(contacts);
     data.id = nanoid();
     dispatch(addContact(data));
   };
@@ -42,10 +36,3 @@ function App() {
 }
 
 export { App };
-
-// useEffect(() => {
-//   localStorage.setItem('contacts', JSON.stringify(contacts));
-// }, [contacts]);
-// const [contacts, setContacts] = useState(
-//   JSON.parse(localStorage.getItem('contacts')) ?? []
-// );
