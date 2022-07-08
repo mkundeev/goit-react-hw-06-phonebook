@@ -1,50 +1,51 @@
-import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 
+import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { addContact, deletContact } from 'redux/contacts/contacts-actions';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
+import { getFilteredContacts } from 'redux/contacts/contacts-selectors';
 
 function App() {
-  const [filter, setFilter] = useState('');
-  const [contacts, setContacts] = useState(
-    JSON.parse(localStorage.getItem('contacts')) ?? []
-  );
+  const dispatch = useDispatch();
+  const contacts = useSelector(getFilteredContacts);
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  // useEffect(() => {
+  //   localStorage.setItem('contacts', JSON.stringify(contacts));
+  // }, [contacts]);
 
   const formSubmit = data => {
-    data.id = nanoid();
     if (contacts.some(({ name }) => name === data.name)) {
       alert(`${data.name} is already in contacts`);
       return;
     }
-    setContacts(prevState => [...prevState, data]);
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+    console.log(contacts);
+    data.id = nanoid();
+    dispatch(addContact(data));
   };
 
-  const deletContact = id => {
-    setContacts(prevState => prevState.filter(contact => contact.id !== id));
-  };
-  const changeFilter = e => {
-    setFilter(e.currentTarget.value.toLowerCase());
-  };
-
-  const filterContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter)
-  );
+  const handleDelet = id => dispatch(deletContact(id));
 
   return (
     <div className="section">
       <h1>Phonebook</h1>
       <ContactForm onSubmit={formSubmit} />
-
       <h2>Contacts</h2>
-      <Filter value={filter} onChange={changeFilter} />
-      <ContactList contacts={filterContacts} deletContact={deletContact} />
+      <Filter />
+      {contacts && (
+        <ContactList contacts={contacts} deletContact={handleDelet} />
+      )}
     </div>
   );
 }
 
 export { App };
+
+// useEffect(() => {
+//   localStorage.setItem('contacts', JSON.stringify(contacts));
+// }, [contacts]);
+// const [contacts, setContacts] = useState(
+//   JSON.parse(localStorage.getItem('contacts')) ?? []
+// );
